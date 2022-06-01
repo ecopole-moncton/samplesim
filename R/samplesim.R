@@ -177,7 +177,7 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
   
   if (dir.exists(file.path(path, name))) {
 
-    cat("The simulation name already exists. Do you want to overwrite it", 
+    cat("The simulation name already exists. Do you want to overwrite it",
         "(type 'y' or 'n')?")
 
     ans <- readLines(n = 1)
@@ -193,6 +193,7 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
   }
 
 
+  
 
   ## Directory creation ----
 
@@ -208,6 +209,22 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
   source_names <- as.factor(as.character(source$"source_names"))
 
 
+  
+  print("resampling all data")
+  maxsamp <- max(nsamples) * 10
+  # source.samples <-
+  #   array(data = NA, dim = c(maxsamp, 2, dim(source)[1])) # nb of isotopes, as far as I can see these functions were written for 2 isotopes as standard
+  source.samples <- vector("list", nbsources)
+                           
+  for (i in 1:nbsources) {
+    tmp <- matrix(nrow=maxsamp, ncol=nbiso)
+    for (j in 1:nbiso) {
+      tmp[, j] <-  rnorm(maxsamp, source$S_MU[i, j], source$S_SIG[i, j])
+    }
+    source.samples[[i]] <- tmp
+  }
+  names(source.samples) <- source_names
+                           
 
   ## Convert data for siar ----
 
@@ -298,9 +315,11 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
                                       "size"      = paste0("size", nsamples)))
   }
 
-
+  
   ## Running samplesim ----
-
+  
+  ## CI fix : resample the source a larger number of times
+  
   for (m in 1:nbsizes) {
 
     res <- list()
@@ -319,18 +338,19 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
 
         if (type == "one source") {
 
-          sources.s[modwhich, ] <- meansd.nd(data  = source[modwhich, ],
+          sources.s[modwhich, ] <- meansd.nd(data  = source.samples[modwhich, ],
                                              n     = nsamples[m],
-                                             input = "means")
+                                             input = "means",
+                                             sample.source = source.samples[[modwhich]])
         }
 
         if (type == "all sources") {
 
           for (k in 1:nbsources) {
-
             sources.s[k, ] <- meansd.nd(data  = source[k, ],
                                         n     = nsamples[m],
-                                        input = "means")
+                                        input = "means",
+                                        sample.source = source.samples[[k]])
           }
         }
 
@@ -363,7 +383,8 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
 
             ssample <- meansd.nd(data  = MU_SIG[modwhich, ],
                                  n     = nsamples[m],
-                                 input = "means")
+                                 input = "means",
+                                 sample.source = source.samples[[modwhich]])
 
             for (i in 1:length(iso)) {
 
@@ -410,15 +431,18 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
         if (type == "all sources") {
 
           if (sources.s$"data_type" == "means") {
+            
+            # TODO: replace MU_SIG with greater simulation?
 
             MU_SIG <- data.frame("source" = source_names, source$"S_MU",
                                  source$"S_SIG")
 
             for (k in 1:nbsources) {
-
+              
               ssample <- meansd.nd(data  = MU_SIG[k, ], 
                                    n     = nsamples[m],
-                                   input = "means")
+                                   input = "means",
+                                   sample.source = source.samples[[k]])
 
               for (i in 1:length(iso)) {
 
@@ -551,7 +575,7 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
                                      resid_err      = resid_err,
                                      process_err    = process_err)
 
-          res[[n]] <- jags$"BUGSoutput"[[8]][[2]]
+          res[[n]] <- jags$"BUGSoutput"[[8]][[3]]
           colnames(res[[n]]) <- source_names
 
         } else {
@@ -580,9 +604,8 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
         }
       }
     }
-
     credintervals <- lapply(res, credint, interval = interval)
-
+    
     for (n in 1:nrep) {
 
       intervals[ , , n, m] <- credintervals[[n]]
