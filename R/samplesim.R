@@ -209,11 +209,9 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
   source_names <- as.factor(as.character(source$"source_names"))
 
 
-  
-  print("resampling all data")
+  # Create sample pools where samples will be picked from to estimate mean and sd for
+  # the desired sample size
   maxsamp <- max(nsamples) * 10
-  # source.samples <-
-  #   array(data = NA, dim = c(maxsamp, 2, dim(source)[1])) # nb of isotopes, as far as I can see these functions were written for 2 isotopes as standard
   source.samples <- vector("list", nbsources)
                            
   for (i in 1:nbsources) {
@@ -317,8 +315,6 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
 
   
   ## Running samplesim ----
-  
-  ## CI fix : resample the source a larger number of times
   
   for (m in 1:nbsizes) {
 
