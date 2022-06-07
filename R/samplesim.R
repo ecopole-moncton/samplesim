@@ -123,15 +123,15 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
                       nsamples = NULL, modify = NULL, nrep = 100, 
                       interval = 90, name = NULL, resid_err = TRUE,
                       process_err = FALSE, run = "test", alpha.prior = 1, 
-                      path = ".") {
+                      path = ".", mcmc_control = list(iter = 1000, burn = 500, thin = 1, n.chain = 3)) {
 
 
   ## Checks ----
   
   package <- tolower(package)
   
-  if (!(package %in% c("siar", "mixsiar"))) {
-    stop("Argument 'package' must be one of 'siar' or 'mixsiar'")
+  if (!(package %in% c("siar", "mixsiar", "simmr"))) {
+    stop("Argument 'package' must be one of 'simmr', 'siar' or 'mixsiar'")
   }
 
   if (is.null(type)) {
@@ -212,8 +212,8 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
   # Create sample pools where samples will be picked from to estimate mean and sd for
   # the desired sample size
   maxsamp <- max(nsamples) * 10
+  
   source.samples <- vector("list", nbsources)
-                           
   for (i in 1:nbsources) {
     tmp <- matrix(nrow=maxsamp, ncol=nbiso)
     for (j in 1:nbiso) {
@@ -233,7 +233,7 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
 
   ## Convert data for siar ----
 
-  if (package == "siar") {
+  if (package %in% c("siar", "simmr")) {
 
     if (source$"data_type" == "raw") {
 
@@ -281,7 +281,7 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
 
   widths  <- medians
 
-  if (package == "mixsiar") {
+  if (package %in% c("mixsiar", "simmr")) {
     
     intervals <- array(dim = c(2, nbsources, nrep, nbsizes),
                        dimnames = list("interval"  = c("lower", "upper"),
@@ -322,7 +322,6 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
 
   
   ## Running samplesim ----
-  
   for (m in 1:nbsizes) {
 
     res <- list()
@@ -539,7 +538,46 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
         }
       }
 
-      if (package == "mixsiar") {
+      else if (package == "simmr") {
+        
+        if (type %in% c("one source", "all sources")) {
+          
+          data.m <- as.matrix(sources.s[, -1])
+          corrects.m <- as.matrix(corrects[, -1])
+          
+          data <-
+            simmr_load(
+              mixtures = as.matrix(mix),
+              source_names = as.character(source_names),
+              source_means = data.m[, grep("mean", tolower(colnames(data.m)))],
+              source_sds = data.m[, grep("sd", tolower(colnames(data.m)))],
+              correction_means = corrects.m[, grep("mean", tolower(colnames(corrects.m)))],
+              correction_sds = corrects.m[, grep("sd", tolower(colnames(corrects.m)))]
+            )
+          
+          tmp = simmr_mcmc(data, mcmc_control = mcmc_control)
+          res[[n]] <- tmp$output[[1]]$BUGSoutput$sims.list$p
+          colnames(res[[n]]) <- source_names
+          
+        } else {
+          
+          datasets[1:nsamples[m], , n, m] <- mix.s
+          
+          if (sum(discr$"mu") == 0){
+            
+            res[[n]] <- siar::siarmcmcdirichletv4(as.matrix(mix.s),
+                                                  source)[[15]]
+            
+          } else {
+            
+            res[[n]] <- siar::siarmcmcdirichletv4(as.matrix(mix.s),
+                                                  source, corrects)[[15]]
+          }
+        }
+        
+      }
+        
+      else if (package == "mixsiar") {
 
         if (type %in% c("one source", "all sources")) {
 
@@ -561,7 +599,7 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
                                      resid_err      = resid_err,
                                      process_err    = process_err)
 
-          res[[n]] <- jags$"BUGSoutput"[[8]][[3]]
+          res[[n]] <- jags$BUGSoutput$sims.list$p.global
           colnames(res[[n]]) <- source_names
 
         } else {
@@ -583,14 +621,16 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
                                      resid_err      = resid_err,
                                      process_err    = process_err)
 
-          res[[n]] <- jags$"BUGSoutput"[[8]][[2]]
+          res[[n]] <- jags$BUGSoutput$sims.list$p.global
           colnames(res[[n]]) <- source_names
           
           file.remove("MixSIAR_model.txt")
         }
       }
     }
+    # str(res)
     credintervals <- lapply(res, credint, interval = interval)
+    print(credintervals)
     
     for (n in 1:nrep) {
 
