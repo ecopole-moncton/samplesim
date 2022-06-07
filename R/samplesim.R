@@ -222,6 +222,13 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
     source.samples[[i]] <- tmp
   }
   names(source.samples) <- source_names
+  
+  consumer.samples <- matrix(nrow=maxsamp, ncol=nbiso)
+  tar.mn <- apply(mix$"data_iso", 2, mean)
+  tar.sd <- apply(mix$"data_iso", 2, stats::sd)
+  for (j in 1:nbiso) {
+    consumer.samples[, j] <-  rnorm(maxsamp, tar.mn, tar.sd)
+  }
                            
 
   ## Convert data for siar ----
@@ -327,10 +334,9 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
 
       sources.s <- source
 
-
       ## SAMPLE DATASET ----
 
-      if (package == "siar") {
+      if (package %in% c("siar", "simmr")) {
 
         if (type == "one source") {
 
@@ -352,17 +358,10 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
 
         if (type == "consumer") {
 
-          tar.mn <- apply(mix, 2, mean)
-          tar.sd <- apply(mix, 2, stats::sd)
-          
-          mix.s <- NULL
-
-          for (i in 1:length(tar.mn)) {
-
-            mix.s <- cbind(mix.s, stats::rnorm(nsamples[m], tar.mn[i], 
-                                               tar.sd[i]))
+          mix.s <- matrix(nrow=nsamples[m], ncol=nbiso)
+          for (i in 1:nbiso) {
+            mix.s[, i] <- sample(consumer.samples, nsamples[n])
           }
-          
           colnames(mix.s) <- colnames(mix)
         }
       }
@@ -422,7 +421,6 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
             sources.s$"n.rep"[modwhich] <- nrow(ssample)
           }
         }
-
 
         if (type == "all sources") {
 
@@ -489,20 +487,12 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
           }
         }
 
-
         if (type == "consumer") {
 
-          tar.mn <- apply(mix$"data_iso", 2, mean)
-          tar.sd <- apply(mix$"data_iso", 2, stats::sd)
-          
-          data.s <- NULL
-
-          for (i in 1:length(iso)) {
-
-            data.s <- cbind(data.s, stats::rnorm(nsamples[m], tar.mn[i], 
-                                                 tar.sd[i]))
+          data.s <- matrix(nrow=nsamples[m], ncol=nbiso)
+          for (i in 1:nbiso) {
+            data.s[, i] <- sample(consumer.samples, nsamples[n])
           }
-          
           colnames(data.s) <- colnames(mix$"data_iso")
 
           mix.s            <- mix
