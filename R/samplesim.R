@@ -142,7 +142,14 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
   if (!(package %in% c("siar", "mixsiar", "simmr"))) {
     stop("Argument 'package' must be one of 'simmr', 'siar' or 'mixsiar'")
   }
-
+  
+  if (!requireNamespace(package, quietly = TRUE)) {
+    stop(
+      sprintf("Package %s must be installed to use this function.", package),
+      call. = FALSE
+    )
+  }
+  
   if (is.null(type)) {
     stop("Argument 'type' cannot be NULL.")
   }
