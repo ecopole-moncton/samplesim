@@ -44,13 +44,14 @@ SystemRequirements: JAGS (>= 4.3)
 Imports: 
     ggplot2,
     grDevices,
-    MixSIAR,
-    siar,
     stats,
     utils
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    siar (<= 4.2.4),
+    simmr,
+     MixSIAR
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.0
 VignetteBuilder: knitr

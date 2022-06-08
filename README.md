@@ -6,9 +6,9 @@
 <!-- badges: start -->
 
 [![R CMD
-Check](https://github.com/ahasverus/samplesim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ahasverus/samplesim/actions/workflows/R-CMD-check.yaml)
+Check](https://github.com/ecopole-moncton/samplesim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ecopole-moncton/samplesim/actions/workflows/R-CMD-check.yaml)
 [![Website
-deployment](https://github.com/ahasverus/samplesim/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/ahasverus/samplesim/actions/workflows/pkgdown.yaml)
+deployment](https://github.com/ecopole-moncton/samplesim/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/ecopole-moncton/samplesim/actions/workflows/pkgdown.yaml)
 [![License: GPL (>=
 2)](https://img.shields.io/badge/License-GPL%20%28%3E%3D%202%29-blue.svg)](https://choosealicense.com/licenses/gpl-2.0/)
 [![LifeCycle](man/figures/lifecycle/lifecycle-stable.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
@@ -23,6 +23,13 @@ in stable isotope mixing solutions.
 
 The package `samplesim` requires the freeware
 [JAGS](https://mcmc-jags.sourceforge.io/).
+
+This package will require either the packages
+[MixSIAR](https://cran.r-project.org/web/packages/MixSIAR/index.html), 
+[simmr](https://cran.r-project.org/web/packages/simmr/) or
+[siar](https://github.com/AndrewLJackson/siar) (which is now defunct and thus
+not recommended any more. If you insist we recommend installing it using the
+following command: remotes::install_github("AndrewLJackson/siar@v.4.2.4"))
 
 ## Installation
 
@@ -43,7 +50,7 @@ if (!requireNamespace("remotes", quietly = TRUE)) {
 }
 
 ## Install development version of 'samplesim' ----
-remotes::install_github("ahasverus/samplesim")
+remotes::install_github("ecopole-moncton/samplesim")
 ```
 
 Then you can attach the package `samplesim`:
@@ -55,7 +62,7 @@ library("samplesim")
 ## Overview
 
 Please read the
-[Vignette](https://ahasverus.github.io/samplesim/articles/samplesim.html)
+[Vignette](https://ecopole-moncton.github.io/samplesim/articles/samplesim.html)
 
 ## Citation
 
@@ -71,7 +78,7 @@ Or alternatively:
 > Casajus N., Cameron C., Ehrich D., and Lecomte N. (2021) samplesim: An
 > R package to investigate sample size effects in stable isotope mixing
 > solutions. R package version 1.0. URL:
-> <https://github.com/ahasverus/samplesim>.
+> <https://github.com/ecopole-moncton/samplesim>.
 
 ## Code of Conduct
 
