@@ -9,7 +9,7 @@
 Check](https://github.com/ecopole-moncton/samplesim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ecopole-moncton/samplesim/actions/workflows/R-CMD-check.yaml)
 [![Website
 deployment](https://github.com/ecopole-moncton/samplesim/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/ecopole-moncton/samplesim/actions/workflows/pkgdown.yaml)
-[![License: GPL (>=
+[![License: GPL (\>=
 2)](https://img.shields.io/badge/License-GPL%20%28%3E%3D%202%29-blue.svg)](https://choosealicense.com/licenses/gpl-2.0/)
 [![LifeCycle](man/figures/lifecycle/lifecycle-stable.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![Project Status:
@@ -25,11 +25,15 @@ The package `samplesim` requires the freeware
 [JAGS](https://mcmc-jags.sourceforge.io/).
 
 This package will require either the packages
-[MixSIAR](https://cran.r-project.org/web/packages/MixSIAR/index.html), 
+[MixSIAR](https://cran.r-project.org/web/packages/MixSIAR/index.html),
 [simmr](https://cran.r-project.org/web/packages/simmr/) or
-[siar](https://github.com/AndrewLJackson/siar) (which is now defunct and thus
-not recommended any more. If you insist we recommend installing it using the
-following command: remotes::install_github("AndrewLJackson/siar@v.4.2.4"))
+[siar](https://github.com/AndrewLJackson/siar) (which is now defunct and
+thus not recommended any more. If you insist we recommend installing it
+using the following command:
+
+``` r
+remotes::install_github("AndrewLJackson/siar@v.4.2.4"))
+```
 
 ## Installation
 
