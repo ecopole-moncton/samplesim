@@ -132,7 +132,7 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
                       nsamples = NULL, modify = NULL, nrep = 100, 
                       interval = 90, name = NULL, resid_err = TRUE,
                       process_err = FALSE, run = "test", alpha.prior = 1, 
-                      path = ".", mcmc_control = list(iter = 1000, burn = 500, thin = 1, n.chain = 3)) {
+                      resample = TRUE, overwrite = FALSE) {
 
 
   ## Checks ----
@@ -191,7 +191,7 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
     stop("The directory ", path, " does not exist.")
   }
   
-  if (dir.exists(file.path(path, name))) {
+  if (dir.exists(file.path(path, name)) && !overwrite) {
 
     cat("The simulation name already exists. Do you want to overwrite it",
         "(type 'y' or 'n')?")
@@ -224,27 +224,34 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
   nbsources    <- length(source$"source_names")
   source_names <- as.factor(as.character(source$"source_names"))
 
-
-  # Create sample pools where samples will be picked from to estimate mean and sd for
-  # the desired sample size
-  maxsamp <- max(nsamples) * 10
   
-  source.samples <- vector("list", nbsources)
-  for (i in 1:nbsources) {
-    tmp <- matrix(nrow=maxsamp, ncol=nbiso)
-    for (j in 1:nbiso) {
-      tmp[, j] <-  rnorm(maxsamp, source$S_MU[i, j], source$S_SIG[i, j])
+  if (!resample) {
+    source.samples <- NULL
+    consumer.samples <- NULL
+  } else {
+    # Create sample pools where samples will be picked from to estimate mean and sd for
+    # the desired sample size
+    maxsamp <- max(nsamples) * 10
+    
+    source.samples <- vector("list", nbsources)
+    for (i in 1:nbsources) {
+      tmp <- matrix(nrow=maxsamp, ncol=nbiso)
+      for (j in 1:nbiso) {
+        tmp[, j] <-  rnorm(maxsamp, source$S_MU[i, j], source$S_SIG[i, j])
+      }
+      source.samples[[i]] <- tmp
     }
-    source.samples[[i]] <- tmp
+    names(source.samples) <- source_names
+    
+    consumer.samples <- matrix(nrow=maxsamp, ncol=nbiso)
+    tar.mn <- apply(mix$"data_iso", 2, mean)
+    tar.sd <- apply(mix$"data_iso", 2, stats::sd)
+    for (j in 1:nbiso) {
+      consumer.samples[, j] <-  rnorm(maxsamp, tar.mn, tar.sd)
+    }
   }
-  names(source.samples) <- source_names
   
-  consumer.samples <- matrix(nrow=maxsamp, ncol=nbiso)
-  tar.mn <- apply(mix$"data_iso", 2, mean)
-  tar.sd <- apply(mix$"data_iso", 2, stats::sd)
-  for (j in 1:nbiso) {
-    consumer.samples[, j] <-  rnorm(maxsamp, tar.mn, tar.sd)
-  }
+  
                            
 
   ## Convert data for siar ----
