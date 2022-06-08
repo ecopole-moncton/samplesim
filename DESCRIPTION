@@ -1,6 +1,6 @@
 Package: samplesim
 Type: Package
-Version: 1.0
+Version: 1.1
 Title: Sample Size Effects in Stable Isotope Mixing Solutions
 Authors@R: c(
     person(
