@@ -61,8 +61,17 @@
 #' @param path a character string of length 1. The directory to save results. 
 #'   This directory must exist and can be an absolute or a relative path.
 #'   Default is the current working directory.
+#'   
+#' @param mcmc_control A list of options passed to the argument of the same of
+#'   the [simmr::simmr_mcmc()] function
 #'
-#'
+#' @param resample a logical value indicating if samples should be picked from
+#'   a greater pool instead of a normal distribution. If set to TRUE, a pool
+#'   of samples of size max(nsamples) * 10 is created and sampled from for
+#'   mean and standard deviation estimates
+#'   
+#' @param overwrite a logical indicating if previously existing results should
+#' be overwritten. By default, prompts the user to decide each time.
 #'
 #' @return This function does not return any object in the R console. Results 
 #' are stored in a directory (argument `name`) and contain four R objects:
