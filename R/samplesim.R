@@ -128,10 +128,11 @@
 #' ## https://ahasverus.github.io/samplesim/articles/samplesim.html
 #' }
 
-samplesim <- function(package = "siar", mix, source, discr, type = NULL, 
+samplesim <- function(package = "", mix, source, discr, type = NULL, 
                       nsamples = NULL, modify = NULL, nrep = 100, 
                       interval = 90, name = NULL, resid_err = TRUE,
                       process_err = FALSE, run = "test", alpha.prior = 1, 
+                      path = ".", mcmc_control = list(iter = 1000, burn = 500, thin = 1, n.chain = 3),
                       resample = TRUE, overwrite = FALSE) {
 
 
@@ -382,7 +383,7 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
 
           mix.s <- matrix(nrow=nsamples[m], ncol=nbiso)
           for (i in 1:nbiso) {
-            mix.s[, i] <- sample(consumer.samples, nsamples[n])
+            mix.s[, i] <- sample(consumer.samples[, i], nsamples[m])
           }
           colnames(mix.s) <- colnames(mix)
         }
@@ -513,7 +514,7 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
 
           data.s <- matrix(nrow=nsamples[m], ncol=nbiso)
           for (i in 1:nbiso) {
-            data.s[, i] <- sample(consumer.samples, nsamples[n])
+            data.s[, i] <- sample(consumer.samples[, i], nsamples[m])
           }
           colnames(data.s) <- colnames(mix$"data_iso")
 
@@ -568,8 +569,10 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
           data.m <- as.matrix(sources.s[, -1])
           corrects.m <- as.matrix(corrects[, -1])
           
+          datasets[ , , n, m] <- data.m
+          
           data <-
-            simmr_load(
+            simmr::simmr_load(
               mixtures = as.matrix(mix),
               source_names = as.character(source_names),
               source_means = data.m[, grep("mean", tolower(colnames(data.m)))],
@@ -578,29 +581,47 @@ samplesim <- function(package = "siar", mix, source, discr, type = NULL,
               correction_sds = corrects.m[, grep("sd", tolower(colnames(corrects.m)))]
             )
           
-          tmp = simmr_mcmc(data, mcmc_control = mcmc_control)
+          tmp = simmr::simmr_mcmc(data, mcmc_control = mcmc_control)
           res[[n]] <- tmp$output[[1]]$BUGSoutput$sims.list$p
           colnames(res[[n]]) <- source_names
           
         } else {
           
-          datasets[1:nsamples[m], , n, m] <- mix.s
+          data.m <- as.matrix(source[, -1])
+          corrects.m <- as.matrix(corrects[, -1])
           
-          if (sum(discr$"mu") == 0){
-            
-            res[[n]] <- siar::siarmcmcdirichletv4(as.matrix(mix.s),
-                                                  source)[[15]]
-            
-          } else {
-            
-            res[[n]] <- siar::siarmcmcdirichletv4(as.matrix(mix.s),
-                                                  source, corrects)[[15]]
-          }
+          datasets[ , , n, m] <- mix.s
+          
+          data <-
+            simmr::simmr_load(
+              mixtures = as.matrix(mix.s),
+              source_names = as.character(source_names),
+              source_means = data.m[, grep("mean", tolower(colnames(data.m)))],
+              source_sds = data.m[, grep("sd", tolower(colnames(data.m)))],
+              correction_means = corrects.m[, grep("mean", tolower(colnames(corrects.m)))],
+              correction_sds = corrects.m[, grep("sd", tolower(colnames(corrects.m)))]
+            )
+          
+          tmp = simmr::simmr_mcmc(data, mcmc_control = mcmc_control)
+          res[[n]] <- tmp$output[[1]]$BUGSoutput$sims.list$p
+          colnames(res[[n]]) <- source_names
+          
+        #   datasets[1:nsamples[m], , n, m] <- mix.s
+        #   
+        #   if (sum(discr$"mu") == 0){
+        #     
+        #     res[[n]] <- siar::siarmcmcdirichletv4(as.matrix(mix.s),
+        #                                           source)[[15]]
+        #     
+        #   } else {
+        #     
+        #     res[[n]] <- siar::siarmcmcdirichletv4(as.matrix(mix.s),
+        #                                           source, corrects)[[15]]
+        #   }
+        # }
+        # 
         }
-        
-      }
-        
-      else if (package == "mixsiar") {
+      } else if (package == "mixsiar") {
 
         if (type %in% c("one source", "all sources")) {
 
