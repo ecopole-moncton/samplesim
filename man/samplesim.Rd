@@ -5,7 +5,7 @@
 \title{Effect of sample size in stable isotope mixing models}
 \usage{
 samplesim(
-  package = "siar",
+  package = "",
   mix,
   source,
   discr,
@@ -19,7 +19,10 @@ samplesim(
   process_err = FALSE,
   run = "test",
   alpha.prior = 1,
-  path = "."
+  path = ".",
+  mcmc_control = list(iter = 1000, burn = 500, thin = 1, n.chain = 3),
+  resample = TRUE,
+  overwrite = FALSE
 )
 }
 \arguments{
@@ -76,6 +79,17 @@ necessary if \code{package = 'mixsiar'}.}
 \item{path}{a character string of length 1. The directory to save results.
 This directory must exist and can be an absolute or a relative path.
 Default is the current working directory.}
+
+\item{mcmc_control}{A list of options passed to the argument of the same of
+the \code{\link[simmr:simmr_mcmc]{simmr::simmr_mcmc()}} function}
+
+\item{resample}{a logical value indicating if samples should be picked from
+a greater pool instead of a normal distribution. If set to TRUE, a pool
+of samples of size max(nsamples) * 10 is created and sampled from for
+mean and standard deviation estimates}
+
+\item{overwrite}{a logical indicating if previously existing results should
+be overwritten. By default, prompts the user to decide each time.}
 }
 \value{
 This function does not return any object in the R console. Results
