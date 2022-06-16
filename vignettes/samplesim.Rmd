@@ -25,8 +25,8 @@ library("ggplot2")
 
 This package allows the investigation of the effect of sample size on estimates 
 and precision of stable isotope mixing solutions calculated with the package 
-[**siar**](https://cran.r-project.org/web/packages/siar/index.html) or the 
-package [**MixSIAR**](https://cran.r-project.org/web/packages/MixSIAR/index.html). 
+[**siar**](https://github.com/AndrewLJackson/siar) or the 
+package [**MixSIAR**](https://cran.r-project.org/web/packages/MixSIAR/index.html) or simmr (https://cran.r-project.org/web/packages/simmr/vignettes/simmr.html). 
 Samples sizes are modified assuming a normal distribution with a user defined 
 mean and standard deviation. Samples of different sizes are created from this 
 distribution, and mixing proportions are estimated for several replicates of 
