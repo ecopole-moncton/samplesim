@@ -205,7 +205,7 @@ referred to the help page of this function.
 
 
 
-### Discrimation data {#discrim}
+### Discrimination data {#discrim}
 
 
 
