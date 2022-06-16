@@ -363,7 +363,7 @@ samplesim <- function(package = "", mix, source, discr, type = NULL,
 
         if (type == "one source") {
 
-          sources.s[modwhich, ] <- meansd.nd(data  = source.samples[modwhich, ],
+          sources.s[modwhich, ] <- meansd.nd(data  = source[modwhich, ],
                                              n     = nsamples[m],
                                              input = "means",
                                              sample.source = source.samples[[modwhich]])
