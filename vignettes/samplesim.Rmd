@@ -41,8 +41,8 @@ function `MixSIAR::run_model()`.
 
 Let's take a look at the data requirements. `samplesim` needs three types of data:
 
-- the isotopic plasma values of the consumers;
-- the isotopic plasma values of the preys (also called sources);
+- the isotopic values of the consumers;
+- the isotopic values of the preys (also called sources);
 - the trophic discrimination factors.
 
 Datasets provided in this package come from Killengreen _et al._ (2011)[^1]
