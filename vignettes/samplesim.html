@@ -336,8 +336,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <p>This package allows the investigation of the effect of sample size on
 estimates and precision of stable isotope mixing solutions calculated
-with the package <a href="https://cran.r-project.org/web/packages/siar/index.html"><strong>siar</strong></a>
-or the package <a href="https://cran.r-project.org/web/packages/MixSIAR/index.html"><strong>MixSIAR</strong></a>.
+with the package <a href="https://github.com/AndrewLJackson/siar"><strong>siar</strong></a>
+or the package <a href="https://cran.r-project.org/web/packages/MixSIAR/index.html"><strong>MixSIAR</strong></a>
+or simmr (<a href="https://cran.r-project.org/web/packages/simmr/vignettes/simmr.html" class="uri">https://cran.r-project.org/web/packages/simmr/vignettes/simmr.html</a>).
 Samples sizes are modified assuming a normal distribution with a user
 defined mean and standard deviation. Samples of different sizes are
 created from this distribution, and mixing proportions are estimated for
@@ -349,8 +350,8 @@ several replicates of each sample size using the function
 <p>Let’s take a look at the data requirements. <code>samplesim</code>
 needs three types of data:</p>
 <ul>
-<li>the isotopic plasma values of the consumers;</li>
-<li>the isotopic plasma values of the preys (also called sources);</li>
+<li>the isotopic values of the consumers;</li>
+<li>the isotopic values of the preys (also called sources);</li>
 <li>the trophic discrimination factors.</li>
 </ul>
 <p>Datasets provided in this package come from Killengreen <em>et
@@ -518,7 +519,7 @@ value of the argument <code>data_type</code> by <code>raw</code>.</p>
 help page of this function.</p>
 </div>
 <div id="discrim" class="section level3">
-<h3>Discrimation data</h3>
+<h3>Discrimination data</h3>
 <p>This dataset contains the trophic discrimination factor (TDF) of two
 (or more) isotopes for each source. It must be structured following the
 format #2 of the sources dataset. In the example provided in
