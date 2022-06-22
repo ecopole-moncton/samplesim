@@ -139,12 +139,13 @@ samplesim <- function(package = "", mix, source, discr, type = NULL,
   ## Checks ----
   
   package <- tolower(package)
+  package_names <- c("siar"="siar", "simmr"="simmr", "mixsiar" = "MixSIAR")
   
   if (!(package %in% c("siar", "mixsiar", "simmr"))) {
     stop("Argument 'package' must be one of 'simmr', 'siar' or 'mixsiar'")
   }
   
-  if (!requireNamespace(package, quietly = TRUE)) {
+  if (!requireNamespace(package_names[package], quietly = TRUE)) {
     stop(
       sprintf("Package %s must be installed to use this function.", package),
       call. = FALSE
